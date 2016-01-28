@@ -1,9 +1,10 @@
 #import <Cordova/CDVPlugin.h>
 #import <Cordova/CDVPluginResult.h>
 #import <TencentOpenAPI/TencentOAuth.h>
-#import <TencentOpenAPI/QQApiInterface.h>
+#import <TencentOpenAPI/TencentOAuthObject.h>
+#import <TencentOpenAPI/TencentApiInterface.h>
 
-@interface YCQQ : CDVPlugin <TencentSessionDelegate, QQApiInterfaceDelegate>
+@interface YCQQ : CDVPlugin <TencentSessionDelegate, TencentApiInterfaceDelegate>
 
 @property(nonatomic) TencentOAuth *tencentOAuth;
 @property(nonatomic, copy) NSString *callback;

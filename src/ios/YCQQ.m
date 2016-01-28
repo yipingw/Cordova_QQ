@@ -168,7 +168,7 @@ NSString *appId = @"";
     if ([url isKindOfClass:[NSURL class]] && [[url absoluteString] hasPrefix:[qqSchemaName stringByAppendingString:@"://qzapp/mqzone"]]) {
         [TencentOAuth HandleOpenURL:url];
     } else {
-      [QQApiInterface handleOpenURL:url delegate:self];
+      [TencentApiInterface handleOpenURL:url delegate:self];
     }
 }
 
@@ -264,31 +264,23 @@ NSString *appId = @"";
  */
 - (void)qqLogin:(CDVInvokedUrlCommand *)command {
     self.permissions = [NSArray arrayWithObjects:
-            kOPEN_PERMISSION_GET_USER_INFO,
-            kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
-            kOPEN_PERMISSION_ADD_ALBUM,
-            kOPEN_PERMISSION_ADD_IDOL,
-            kOPEN_PERMISSION_ADD_ONE_BLOG,
-            kOPEN_PERMISSION_ADD_PIC_T,
-            kOPEN_PERMISSION_ADD_SHARE,
-            kOPEN_PERMISSION_ADD_TOPIC,
-            kOPEN_PERMISSION_CHECK_PAGE_FANS,
-            kOPEN_PERMISSION_DEL_IDOL,
-            kOPEN_PERMISSION_DEL_T,
-            kOPEN_PERMISSION_GET_FANSLIST,
-            kOPEN_PERMISSION_GET_IDOLLIST,
-            kOPEN_PERMISSION_GET_INFO,
-            kOPEN_PERMISSION_GET_OTHER_INFO,
-            kOPEN_PERMISSION_GET_REPOST_LIST,
-            kOPEN_PERMISSION_LIST_ALBUM,
-            kOPEN_PERMISSION_UPLOAD_PIC,
-            kOPEN_PERMISSION_GET_VIP_INFO,
-            kOPEN_PERMISSION_GET_VIP_RICH_INFO,
-            kOPEN_PERMISSION_GET_INTIMATE_FRIENDS_WEIBO,
-            kOPEN_PERMISSION_MATCH_NICK_TIPS_WEIBO,
-                    nil];
+                          kOPEN_PERMISSION_GET_USER_INFO,
+                          kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
+                          kOPEN_PERMISSION_ADD_ALBUM,
+                          kOPEN_PERMISSION_ADD_ONE_BLOG,
+                          kOPEN_PERMISSION_ADD_SHARE,
+                          kOPEN_PERMISSION_ADD_TOPIC,
+                          kOPEN_PERMISSION_CHECK_PAGE_FANS,
+                          kOPEN_PERMISSION_GET_INFO,
+                          kOPEN_PERMISSION_GET_OTHER_INFO,
+                          kOPEN_PERMISSION_LIST_ALBUM,
+                          kOPEN_PERMISSION_UPLOAD_PIC,
+                          kOPEN_PERMISSION_GET_VIP_INFO,
+                          kOPEN_PERMISSION_GET_VIP_RICH_INFO,
+                          nil];
+  
     self.callback = command.callbackId;
-    if (self.tencentOAuth.isSessionValid) {
+    if ([self.tencentOAuth authorize:self.permissions inSafari:NO]) {
         NSMutableDictionary *Dic = [NSMutableDictionary dictionaryWithCapacity:2];
         [Dic setObject:self.tencentOAuth.openId forKey:@"userid"];
         [Dic setObject:self.tencentOAuth.accessToken forKey:@"access_token"];
@@ -296,7 +288,8 @@ NSString *appId = @"";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
     }
     else {
-        [self.tencentOAuth authorize:self.permissions inSafari:NO];
+      CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"授权登录失败，请稍后再试！"];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callback];
     }
 }
 
